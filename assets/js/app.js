@@ -79,11 +79,29 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .attr("x", 0 - (height / 2))
       .attr("dy", "1em")
       .attr("class", "axisText")
-      .text("In Poverty (%)");
+      .text("Lacks Healthcare (%)");
 
     chartGroup.append("text")
       .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
       .attr("class", "axisText")
-      .text("Lacks Healthcare (%)");
+      .text("In Poverty (%)");
+
+    // Step 1: Initialize Tooltip
+    const toolTip = d3.tip()
+    .attr("class", "d3-tip")
+    .offset([-10, 20])
+    .html(d => `<strong>${d.state}<br /> Lacks Healthcare: ${d.healthcare}(%)<br />In Poverty: ${d.poverty}(%)`);
+
+    // Step 2: Create the tooltip in chartGroup.
+    chartGroup.call(toolTip);
+
+    // Step 3: Create "mouseover" event listener to display tooltip
+    circlesGroup.on("mouseover", function(d) {
+      toolTip.show(d, this);
+    })
+    // Step 4: Create "mouseout" event listener to hide tooltip
+    .on("mouseout", function(d) {
+      toolTip.hide(d);
+    });
 
   }).catch(error => console.log(error));
