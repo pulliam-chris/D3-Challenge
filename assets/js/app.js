@@ -17,7 +17,7 @@ let yAxis = "healthcare";
 function xScale(cdata, chosenXAxis) {
   // create scales
   let xLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(cdata, d => d[chosenXAxis])])
+      .domain([8, d3.max(cdata, d => d[chosenXAxis])])
       .range([0, width]);
 
   return xLinearScale;
@@ -26,7 +26,7 @@ function xScale(cdata, chosenXAxis) {
 function yScale(cdata, chosenYAxis) {
   // create scales
   let yLinearScale = d3.scaleLinear()
-      .domain([0, d3.max(cdata, d => d[chosenYAxis])])
+      .domain([2, d3.max(cdata, d => d[chosenYAxis])])
       .range([height, 0]);
   
   return yLinearScale;
@@ -85,6 +85,7 @@ chartGroup.append("text")
   .attr("dy", "1em")
   .attr("class", "axisText")
   .attr("value", "healthcare")
+  .attr("id", "healthcare")
   .text("Lacks Healthcare (%)")
   .classed("active", true);
 
@@ -95,6 +96,7 @@ chartGroup.append("text")
   .attr("dy", "1em")
   .attr("class", "axisText")
   .attr("value", "smokes")
+  .attr("id", "smokes")
   .text("Smokes (%)")
   .classed("inactive", true);
 
@@ -102,6 +104,7 @@ chartGroup.append("text")
   .attr("transform", `translate(${width / 2}, ${height + margin.top + 30})`)
   .attr("class", "axisText")
   .attr("value", "poverty")
+  .attr("id", "poverty")
   .text("In Poverty (%)")
   .classed("active", true);
 
@@ -109,7 +112,8 @@ chartGroup.append("text")
   .attr("transform", `translate(${width / 2}, ${height + margin.top + 50})`)
   .attr("class", "axisText")
   .attr("value", "income")
-  .text("Income")
+  .attr("id", "income")
+  .text("Income ($)")
   .classed("inactive", true);
 
      //if (value !== chosenXAxis) {
@@ -211,6 +215,25 @@ d3.csv("assets/data/data.csv").then(censusData => {
         xCG = renXAxis(xLinearScale, xCG);
         //circlesGroup = xCG.selectAll("circle")
         //circlesGroup = renderCircles(circlesGroup, xLinearScale, yLinearScale, xAxis, yAxis);
+        if(value === "poverty"){
+          let label = d3.select("#poverty");
+          label
+            .classed("active", true)
+            .classed("inactive", false);
+          label = d3.select("#income")
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else {
+          let label = d3.select("#income");
+          label
+            .classed("active", true)
+            .classed("inactive", false);
+          label = d3.select("#poverty")
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        
       }
 
       if(value === "healthcare" || value === "smokes"){
@@ -218,10 +241,30 @@ d3.csv("assets/data/data.csv").then(censusData => {
         yLinearScale = yScale(censusData, yAxis);
         yCG = renYAxis(yLinearScale, yCG);
         //circlesGroup = yCG.selectAll("circle")
+
+        if(value === "healthcare"){
+          let label = d3.select("#healthcare");
+          label
+            .classed("active", true)
+            .classed("inactive", false);
+          label = d3.select("#income")
+            .classed("active", false)
+            .classed("inactive", true);
+        }
+        else {
+          let label = d3.select("#smokes");
+          label
+            .classed("active", true)
+            .classed("inactive", false);
+          label = d3.select("#healthcare")
+            .classed("active", false)
+            .classed("inactive", true);
+        }
       }
       
       circlesGroup = chartGroup.selectAll("circle")
       circlesGroup.remove()
+
       circlesGroup = chartGroup.selectAll("circle")
       .data(censusData)
       .join("g")
@@ -239,7 +282,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       let toolTip = d3.tip()
       .attr("class", "d3-tip")
       .offset([20, 100])
-      .html(d => `<strong>${d.state}<br /> Lacks Healthcare: ${d.healthcare}(%)<br />In Poverty: ${d.poverty}(%)`);
+      .html(d => `<strong>${d.state}<br />${xAxis}: ${d[xAxis]}<br />${yAxis}: ${d[yAxis]}`);
   
       // Step 2: Create the tooltip in chartGroup.
       chartGroup.call(toolTip);
