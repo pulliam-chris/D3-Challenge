@@ -111,9 +111,9 @@ chartGroup.append("text")
 chartGroup.append("text")
   .attr("transform", `translate(${width / 2}, ${height + margin.top + 50})`)
   .attr("class", "axisText")
-  .attr("value", "income")
-  .attr("id", "income")
-  .text("Income ($)")
+  .attr("value", "obesity")
+  .attr("id", "obesity")
+  .text("Obesity (%)")
   .classed("inactive", true);
 
      //if (value !== chosenXAxis) {
@@ -131,7 +131,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       data.poverty = +data.poverty;
       data.healthcare = +data.healthcare;
       data.smokes = +data.smokes;
-      data.income = +data.income;
+      data.income = +data.obesity;
     });
 
     //console.log(censusData)
@@ -187,7 +187,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
     let toolTip = d3.tip()
     .attr("class", "d3-tip")
     .offset([20, 100])
-    .html(d => `<strong>${d.state}<br /> Lacks Healthcare: ${d.healthcare}(%)<br />In Poverty: ${d.poverty}(%)`);
+    .html(d => `<strong>${d.state}<br />${xAxis}: ${d[xAxis]}(%)<br />${yAxis}: ${d[yAxis]}(%)`);
 
     // Step 2: Create the tooltip in chartGroup.
     chartGroup.call(toolTip);
@@ -208,7 +208,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
     let value = d3.select(this).attr("value");
     console.log(value)
 
-      if(value === "poverty" || value === "income"){ 
+      if(value === "poverty" || value === "obesity"){ 
         xAxis = value;
         xLinearScale = xScale(censusData, xAxis);
         // updates x axis with transition
@@ -220,12 +220,12 @@ d3.csv("assets/data/data.csv").then(censusData => {
           label
             .classed("active", true)
             .classed("inactive", false);
-          label = d3.select("#income")
+          label = d3.select("#obesity")
             .classed("active", false)
             .classed("inactive", true);
         }
         else {
-          let label = d3.select("#income");
+          let label = d3.select("#obesity");
           label
             .classed("active", true)
             .classed("inactive", false);
@@ -247,7 +247,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
           label
             .classed("active", true)
             .classed("inactive", false);
-          label = d3.select("#income")
+          label = d3.select("#smokes")
             .classed("active", false)
             .classed("inactive", true);
         }
@@ -282,7 +282,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       let toolTip = d3.tip()
       .attr("class", "d3-tip")
       .offset([20, 100])
-      .html(d => `<strong>${d.state}<br />${xAxis}: ${d[xAxis]}<br />${yAxis}: ${d[yAxis]}`);
+      .html(d => `<strong>${d.state}<br />${xAxis}: ${d[xAxis]}(%)<br />${yAxis}: ${d[yAxis]}(%)`);
   
       // Step 2: Create the tooltip in chartGroup.
       chartGroup.call(toolTip);
