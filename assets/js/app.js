@@ -16,8 +16,8 @@ let yAxis = "healthcare";
 
 function xScale(cdata, chosenXAxis) {
   // create scales
-  const xLinearScale = d3.scaleLinear()
-      .domain([8, d3.max(cdata, d => d[chosenXAxis])])
+  let xLinearScale = d3.scaleLinear()
+      .domain([0, d3.max(cdata, d => d[chosenXAxis])])
       .range([0, width]);
 
   return xLinearScale;
@@ -25,8 +25,8 @@ function xScale(cdata, chosenXAxis) {
 
 function yScale(cdata, chosenYAxis) {
   // create scales
-  const yLinearScale = d3.scaleLinear()
-      .domain([2, d3.max(cdata, d => d[chosenYAxis])])
+  let yLinearScale = d3.scaleLinear()
+      .domain([0, d3.max(cdata, d => d[chosenYAxis])])
       .range([height, 0]);
   
   return yLinearScale;
@@ -58,10 +58,12 @@ function renYAxis(newYScale, yAxis) {
 // new circles
 function renderCircles(circlesGroup, newXScale, newYScale, chosenXAxis, chosenYAxis) {
 
+  //circlesGroup = chartGroup.selectAll("circles");
   circlesGroup.transition()
     .duration(1000)
     .attr("cx", d => newXScale(d[chosenXAxis]))
-    .attr("cx", d => newYScale(d[chosenYAxis]));
+    .attr("cy", d => newYScale(d[chosenYAxis]));
+    //.attr("transform", d => `translate(${newXScale(d[chosenXAxis])}, ${newYScale(d[chosenYAxis])})`)
 
   return circlesGroup;
 }
@@ -202,19 +204,66 @@ d3.csv("assets/data/data.csv").then(censusData => {
     let value = d3.select(this).attr("value");
     console.log(value)
 
-      xAxis = value;
-      xLinearScale = xScale(censusData, xAxis);
-      // updates x axis with transition
-      xCG = renXAxis(xLinearScale, xCG);
-    
-      //yAxis = value;
-      //yLinearScale = yScale(censusData, yAxis);
-      //yCG = renYAxis(yLinearScale, yCG);
+      if(value === "poverty" || value === "income"){ 
+        xAxis = value;
+        xLinearScale = xScale(censusData, xAxis);
+        // updates x axis with transition
+        xCG = renXAxis(xLinearScale, xCG);
+        //circlesGroup = xCG.selectAll("circle")
+        //circlesGroup = renderCircles(circlesGroup, xLinearScale, yLinearScale, xAxis, yAxis);
+      }
 
-    console.log(xAxis);
-    console.log(yAxis);
+      if(value === "healthcare" || value === "smokes"){
+        yAxis = value;
+        yLinearScale = yScale(censusData, yAxis);
+        yCG = renYAxis(yLinearScale, yCG);
+        //circlesGroup = yCG.selectAll("circle")
+      }
+      
+      circlesGroup = chartGroup.selectAll("circle")
+      circlesGroup.remove()
+      circlesGroup = chartGroup.selectAll("circle")
+      .data(censusData)
+      .join("g")
+      .attr("transform", d => `translate(${xLinearScale(d[xAxis])}, ${yLinearScale(d[yAxis])})`)
+             
+      circlesGroup.append("circle")
+      .attr("class", "stateCircle")
+      .attr("r", "15")
+      
+      circlesGroup.append("text")
+      .attr("class", "stateText")
+      .text(d => d.abbr)
+       
+      // Step 1: Initialize Tooltip for circles
+      let toolTip = d3.tip()
+      .attr("class", "d3-tip")
+      .offset([20, 100])
+      .html(d => `<strong>${d.state}<br /> Lacks Healthcare: ${d.healthcare}(%)<br />In Poverty: ${d.poverty}(%)`);
+  
+      // Step 2: Create the tooltip in chartGroup.
+      chartGroup.call(toolTip);
+  
+      // Step 3: Create "mouseover" event listener to display tooltip
+      circlesGroup.on("mouseover", function(d) {
+        toolTip.show(d, this);
+      })
+      // Step 4: Create "mouseout" event listener to hide tooltip
+      .on("mouseout", function(d) {
+        toolTip.hide(d);
+      });
+
+
+    //circlesGroup = chartGroup.selectAll("circle");
+    //.attr("transform", d => `translate(${xLinearScale(d.poverty)}, ${yLinearScale(d.healthcare)})`)
+    //circlesGroup = renderCircles(circlesGroup, xLinearScale, yLinearScale, xAxis, yAxis);
+    //circlesGroup = circlesGroup.attr("transform", d => `translate(${xLinearScale(d[xAxis])}, ${yLinearScale(d[yAxis])})`);
+
+    //.attr("transform", d => `translate(${xLinearScale(d.poverty)}, ${yLinearScale(d.healthcare)})`)
+    //console.log(xAxis);
+    //console.log(yAxis);
     
-  })
+    })
 
   
 
