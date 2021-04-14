@@ -32,6 +32,40 @@ function yScale(cdata, chosenYAxis) {
   return yLinearScale;
 }
 
+// function used for updating xAxis const upon click on axis label
+function renXAxis(newXScale, xAxis) {
+  const bottomAxis = d3.axisBottom(newXScale);
+
+  xAxis.transition()
+    .duration(1000)
+    .call(bottomAxis);
+
+  return xAxis;
+}
+
+// function used for updating xAxis const upon click on axis label
+function renYAxis(newYScale, yAxis) {
+  const leftAxis = d3.axisLeft(newYScale);
+
+  yAxis.transition()
+    .duration(1000)
+    .call(leftAxis);
+
+  return yAxis;
+}
+
+// function used for updating circles group with a transition to
+// new circles
+function renderCircles(circlesGroup, newXScale, newYScale, chosenXAxis, chosenYAxis) {
+
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cx", d => newXScale(d[chosenXAxis]))
+    .attr("cx", d => newYScale(d[chosenYAxis]));
+
+  return circlesGroup;
+}
+
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
 const svg = d3.select("#scatter")
   .append("svg")
@@ -76,18 +110,11 @@ chartGroup.append("text")
   .text("Income")
   .classed("inactive", true);
 
-//Initial on-click behaviour for labels
-chartGroup.selectAll("text")
-  .on("click", function() {
-    // get value of label selection
-    const value = d3.select(this).attr("value");
-    console.log(value)
-
-    //if (value !== chosenXAxis) {
+     //if (value !== chosenXAxis) {
 
       // replaces chosenXAxis with value
       //chosenXAxis = value;}
-  })
+  
 
 // Import Data
 d3.csv("assets/data/data.csv").then(censusData => {
@@ -114,30 +141,30 @@ d3.csv("assets/data/data.csv").then(censusData => {
     //const xLinearScale = d3.scaleLinear()
     //  .domain([8, d3.max(censusData, d => d.poverty)])
     //  .range([0, width]);
-    const xLinearScale = xScale(censusData, xAxis);
+    let xLinearScale = xScale(censusData, xAxis);
 
     //const yLinearScale = d3.scaleLinear()
     //  .domain([2, d3.max(censusData, d => d.healthcare)])
     //  .range([height, 0]);
-    const yLinearScale = yScale(censusData, yAxis);
+    let yLinearScale = yScale(censusData, yAxis);
 
     // Step 3: Create axis functions
     // ==============================
-    const bottomAxis = d3.axisBottom(xLinearScale);
-    const leftAxis = d3.axisLeft(yLinearScale);
+    let bottomAxis = d3.axisBottom(xLinearScale);
+    let leftAxis = d3.axisLeft(yLinearScale);
 
     // Step 4: Append Axes to the chart
     // ==============================
-    chartGroup.append("g")
+    let xCG = chartGroup.append("g")
       .attr("transform", `translate(0, ${height})`)
       .call(bottomAxis);
 
-    chartGroup.append("g")
+    let yCG = chartGroup.append("g")
       .call(leftAxis);
 
     // Step 5: Create Circles
     // ==============================
-    const circlesGroup = chartGroup.selectAll("circle")
+    let circlesGroup = chartGroup.selectAll("circle")
     .data(censusData)
     .join("g")
     .attr("transform", d => `translate(${xLinearScale(d.poverty)}, ${yLinearScale(d.healthcare)})`)
@@ -151,7 +178,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
     .text(d => d.abbr)
      
     // Step 1: Initialize Tooltip for circles
-    const toolTip = d3.tip()
+    let toolTip = d3.tip()
     .attr("class", "d3-tip")
     .offset([20, 100])
     .html(d => `<strong>${d.state}<br /> Lacks Healthcare: ${d.healthcare}(%)<br />In Poverty: ${d.poverty}(%)`);
@@ -167,5 +194,28 @@ d3.csv("assets/data/data.csv").then(censusData => {
     .on("mouseout", function(d) {
       toolTip.hide(d);
     });
+
+  //Initial on-click behaviour for labels
+  chartGroup.selectAll("text")
+  .on("click", function() {
+  // get value of label selection
+    let value = d3.select(this).attr("value");
+    console.log(value)
+
+      xAxis = value;
+      xLinearScale = xScale(censusData, xAxis);
+      // updates x axis with transition
+      xCG = renXAxis(xLinearScale, xCG);
+    
+      //yAxis = value;
+      //yLinearScale = yScale(censusData, yAxis);
+      //yCG = renYAxis(yLinearScale, yCG);
+
+    console.log(xAxis);
+    console.log(yAxis);
+    
+  })
+
+  
 
   }).catch(error => console.log(error));
