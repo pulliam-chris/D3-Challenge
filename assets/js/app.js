@@ -68,6 +68,26 @@ function renderCircles(circlesGroup, newXScale, newYScale, chosenXAxis, chosenYA
   return circlesGroup;
 }
 
+function renToolTips (circlesGroup, chosenXAxis, chosenYAxis) {
+  // Step 1: Initialize Tooltip for circles
+  let toolTip = d3.tip()
+  .attr("class", "d3-tip")
+  .offset([20, 100])
+  .html(d => `<strong>${d.state}<br />${chosenXAxis}: ${d[chosenXAxis]}(%)<br />${chosenYAxis}: ${d[chosenYAxis]}(%)`);
+
+  // Step 2: Create the tooltip in chartGroup.
+  chartGroup.call(toolTip);
+
+  // Step 3: Create "mouseover" event listener to display tooltip
+  circlesGroup.on("mouseover", function(d) {
+    toolTip.show(d, this);
+  })
+  // Step 4: Create "mouseout" event listener to hide tooltip
+  .on("mouseout", function(d) {
+    toolTip.hide(d);
+  });
+}
+
 // Create an SVG wrapper, append an SVG group that will hold our chart, and shift the latter by left and top margins.
 const svg = d3.select("#scatter")
   .append("svg")
@@ -182,24 +202,10 @@ d3.csv("assets/data/data.csv").then(censusData => {
     circlesGroup.append("text")
     .attr("class", "stateText")
     .text(d => d.abbr)
+
+    renToolTips(circlesGroup, xAxis, yAxis);
      
-    // Step 1: Initialize Tooltip for circles
-    let toolTip = d3.tip()
-    .attr("class", "d3-tip")
-    .offset([20, 100])
-    .html(d => `<strong>${d.state}<br />${xAxis}: ${d[xAxis]}(%)<br />${yAxis}: ${d[yAxis]}(%)`);
-
-    // Step 2: Create the tooltip in chartGroup.
-    chartGroup.call(toolTip);
-
-    // Step 3: Create "mouseover" event listener to display tooltip
-    circlesGroup.on("mouseover", function(d) {
-      toolTip.show(d, this);
-    })
-    // Step 4: Create "mouseout" event listener to hide tooltip
-    .on("mouseout", function(d) {
-      toolTip.hide(d);
-    });
+    
 
   //Initial on-click behaviour for labels
   chartGroup.selectAll("text")
@@ -277,7 +283,10 @@ d3.csv("assets/data/data.csv").then(censusData => {
       circlesGroup.append("text")
       .attr("class", "stateText")
       .text(d => d.abbr)
+
+      renToolTips(circlesGroup, xAxis, yAxis);
        
+    /*  
       // Step 1: Initialize Tooltip for circles
       let toolTip = d3.tip()
       .attr("class", "d3-tip")
@@ -295,7 +304,7 @@ d3.csv("assets/data/data.csv").then(censusData => {
       .on("mouseout", function(d) {
         toolTip.hide(d);
       });
-
+    */
 
     //circlesGroup = chartGroup.selectAll("circle");
     //.attr("transform", d => `translate(${xLinearScale(d.poverty)}, ${yLinearScale(d.healthcare)})`)
