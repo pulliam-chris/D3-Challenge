@@ -11,6 +11,6 @@ Primary files:
 * data\data.csv - Static CSV file with the following headers: ```id,state,abbr,poverty,povertyMoe,age,ageMoe,income,incomeMoe,healthcare,healthcareLow,healthcareHigh,obesity,obesityLow,obesityHigh,smokes,smokesLow,smokesHigh ```
 
   * About the Data
-  The data set included with the assignment is based on 2014 ACS 1-year estimates from the US Census Bureau, but you are free to investigate a different data set. The current data set includes data on rates of income, obesity, poverty, etc. by state. MOE stands for "margin of error."
+  The data set included with the assignment is based on 2014 ACS 1-year estimates from the US Census Bureau. The current data set includes data on rates of income, obesity, poverty, etc. by state. MOE stands for "margin of error."
 
 * index.html - Provided homepage programmed using Bootstrap containing the scatterplot figure and brief discussions of the observed trends.
