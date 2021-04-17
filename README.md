@@ -5,7 +5,7 @@ This project is enabled for **GitHub Pages** and the results can be reviewed at 
 
 https://pulliam-chris.github.io/D3-Challenge/
 
-Primary files:
+**Primary files**
 * static\js\app.js - Script that creates an initial SVG area on a homepage. Then based on the data read from a static file creates translated axes, circular data points, and tool tips that are activated when the user hovers their mouse over those data points.  After the initial page load the user is then able to toggle the X-Y axis labels using a click function to view different elements of the same data set to investigate relative trends.  
 
 * data\data.csv - Static CSV file with the following headers: ```id,state,abbr,poverty,povertyMoe,age,ageMoe,income,incomeMoe,healthcare,healthcareLow,healthcareHigh,obesity,obesityLow,obesityHigh,smokes,smokesLow,smokesHigh ```
