@@ -142,7 +142,7 @@ chartGroup.append("text")
   .classed("inactive", true);
 
 
-// With axis and functions defined, import the Census data
+// With axes and functions defined, import the Census data
 d3.csv("assets/data/data.csv").then(censusData => {
 
     // Cast data utilized in chart as numbers
